@@ -1,3 +1,4 @@
+// Here we are recreating the game Monopoly but using the boardgame.io package
 const board = [
     { name: 'Go', type: 'start' },
     { name: 'Mediterranean Avenue', type: 'property', price: 60, rent: 2, owner: null },
@@ -125,6 +126,44 @@ const MortgageBacked = {
           ctx.events.endTurn();
         },
       },
-      
+      // Implement game logic functions here
+    // Property Management
+    manageProperty(G, ctx, propertyIndex) {
+        const currentPlayer = G.players[ctx.currentPlayer];
+        const property = G.board[propertyIndex];
+
+        // Check if the property is owned by the current player
+        if (property.owner !== ctx.currentPlayer) {
+        throw new Error('You do not own this property.');
+        }
+
+        // Implement logic for managing the property, like building houses/hotels, selling houses, etc.
+    },
+
+    // Rent Calculation
+    calculateRent(G, ctx, propertyIndex) {
+        const property = G.board[propertyIndex];
+
+        // Implement rent calculation logic based on property type and number of houses/hotels
+        // Update the game state to transfer rent from the current player to the property owner
+    },
+
+    // Chance Card
+    drawChanceCard(G, ctx) {
+        // Implement logic for drawing a chance card and applying its effects
+    },
+
+    // Community Chest Card
+    drawCommunityChestCard(G, ctx) {
+        // Implement logic for drawing a community chest card and applying its effects
+    },
+
+    // Win Conditions
+    endIf(G, ctx) {
+        // Implement win conditions, such as a player bankrupting all others or reaching a monetary threshold
+        // If win conditions are met, end the game and declare a winner
+    },
+    };
+
   
   export default MortgageBacked;
