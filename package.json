@@ -1,0 +1,27 @@
+{
+  "type": "module",
+  "name": "mortgage-backed",
+  "version": "1.0.0",
+  "description": "Turn based game letting you securitize real estate, issue stock, take on debt, and more",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "main"
+  },
+  "keywords": [
+    "board",
+    "game",
+    "stock",
+    "mortage",
+    "backed",
+    "securities"
+  ],
+  "author": "Abdullah Abdulkarim",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "boardgame.io": "^0.50.2"
+  }
+}
