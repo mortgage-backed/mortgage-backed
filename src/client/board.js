@@ -1,6 +1,9 @@
-const React = require('react');
+import React from 'react';
 
 exports.Board = function ({ G, ctx, moves }) {
+    console.log('G:', G);
+    console.log('ctx:', ctx);
+    console.log('moves:', moves);
     const board = G.board;
 
     // Define the board spaces
