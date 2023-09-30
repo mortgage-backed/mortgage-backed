@@ -43,104 +43,104 @@ const board = [
   ];
   
 const MortgageBacked = {
-    setup: (ctx) => ({
-      board: [], // Define your MB board here
-      players: {
-        0: { position: 0, money: 1500, properties: [] },
-        1: { position: 0, money: 1500, properties: [] },
-        // Add more players as needed
-      },
-      currentPlayer: 0, // Initialize with player 0
-      // Add other game variables like chance cards, community chest, etc.
-    }),
-  
-    // Define your game moves, turn order, and game logic here
-    moves: {
-        // Player rolls the dice and moves their token
-        rollDice(G, ctx) {
-          // Check if it's the current player's turn
-          if (ctx.currentPlayer !== ctx.currentPlayer) {
-            throw new Error('It is not your turn.');
-          }
-      
-          // Simulate rolling two dice (each with values from 1 to 6)
-          const die1 = Math.floor(Math.random() * 6) + 1;
-          const die2 = Math.floor(Math.random() * 6) + 1;
-          const totalRoll = die1 + die2;
-      
-          // Update the player's position
-          G.players[ctx.currentPlayer].position += totalRoll;
-      
-          // Handle passing Go and earning $200
-          if (G.players[ctx.currentPlayer].position >= board.length) {
-            G.players[ctx.currentPlayer].position -= board.length;
-            G.players[ctx.currentPlayer].money += 200;
-          }
-      
-          // Implement logic for actions based on the space they land on
-          const currentSpace = board[G.players[ctx.currentPlayer].position];
-          switch (currentSpace.type) {
-            case 'property':
-              // Implement logic for buying or paying rent on a property
-              break;
-            case 'chance':
-              // Implement logic for drawing a chance card
-              break;
-            case 'community-chest':
-              // Implement logic for drawing a community chest card
-              break;
-            // Add more space types and their logic as needed
-          }
-      
-          // End the player's turn
-          ctx.events.endTurn();
-        },
-      
-        // Player buys a property
-        buyProperty(G, ctx, propertyIndex) {
-          const currentPlayer = G.players[ctx.currentPlayer];
-          const property = board[propertyIndex];
-      
-          // Check if the property is available for purchase
-          if (property.owner !== null) {
-            throw new Error('This property is already owned.');
-          }
-      
-          // Check if the player has enough money to buy the property
-          if (currentPlayer.money < property.price) {
-            throw new Error('You do not have enough money to buy this property.');
-          }
-      
-          // Deduct the property price from the player's money and set the property owner
-          currentPlayer.money -= property.price;
-          property.owner = ctx.currentPlayer;
-          currentPlayer.properties.push(propertyIndex);
-      
-          // End the player's turn
-          ctx.events.endTurn();
-        },
-      
-        // Player ends their turn
-        endTurn(G, ctx) {
-          // End the player's turn
-          ctx.events.endTurn();
-        },
-      },
-      // Implement game logic functions here
-    // Property Management
-    manageProperty(G, ctx, propertyIndex) {
-        const currentPlayer = G.players[ctx.currentPlayer];
-        const property = G.board[propertyIndex];
+  setup: (ctx) => ({
+    board: [], // Define your MB board here
+    players: {
+      0: { position: 0, money: 1500, properties: [] },
+      1: { position: 0, money: 1500, properties: [] },
+      // Add more players as needed
+    },
+    currentPlayer: 0, // Initialize with player 0
+    // Add other game variables like chance cards, community chest, etc.
+  }),
 
-        // Check if the property is owned by the current player
-        if (property.owner !== ctx.currentPlayer) {
-        throw new Error('You do not own this property.');
-        }
+  // Define your game moves, turn order, and game logic here
+  moves: {
+    // Player rolls the dice and moves their token
+    rollDice(G, ctx) {
+      // Check if it's the current player's turn
+      if (ctx.currentPlayer !== G.currentPlayer) {
+        throw new Error('It is not your turn.');
+      }
 
-        // Implement logic for managing the property, like building houses/hotels, selling houses, etc.
+      // Simulate rolling two dice (each with values from 1 to 6)
+      const die1 = Math.floor(Math.random() * 6) + 1;
+      const die2 = Math.floor(Math.random() * 6) + 1;
+      const totalRoll = die1 + die2;
+
+      // Update the player's position
+      G.players[G.currentPlayer].position += totalRoll;
+
+      // Handle passing Go and earning $200
+      if (G.players[G.currentPlayer].position >= G.board.length) {
+        G.players[G.currentPlayer].position -= G.board.length;
+        G.players[G.currentPlayer].money += 200;
+      }
+
+      // Implement logic for actions based on the space they land on
+      const currentSpace = G.board[G.players[G.currentPlayer].position];
+      switch (currentSpace.type) {
+        case 'property':
+          // Implement logic for buying or paying rent on a property
+          break;
+        case 'chance':
+          // Implement logic for drawing a chance card
+          break;
+        case 'community-chest':
+          // Implement logic for drawing a community chest card
+          break;
+        // Add more space types and their logic as needed
+      }
+
+      // End the player's turn
+      ctx.events.endTurn();
     },
 
-    function calculateRent(G, ctx, propertyIndex) {
+    // Player buys a property
+    buyProperty(G, ctx, propertyIndex) {
+      const currentPlayer = G.players[G.currentPlayer];
+      const property = G.board[propertyIndex];
+
+      // Check if the property is available for purchase
+      if (property.owner !== null) {
+        throw new Error('This property is already owned.');
+      }
+
+      // Check if the player has enough money to buy the property
+      if (currentPlayer.money < property.price) {
+        throw new Error('You do not have enough money to buy this property.');
+      }
+
+      // Deduct the property price from the player's money and set the property owner
+      currentPlayer.money -= property.price;
+      property.owner = G.currentPlayer;
+      currentPlayer.properties.push(propertyIndex);
+
+      // End the player's turn
+      ctx.events.endTurn();
+    },
+
+    // Player ends their turn
+    endTurn(G, ctx) {
+      // End the player's turn
+      ctx.events.endTurn();
+    },
+
+    // Implement game logic functions here
+    // Property Management
+    manageProperty(G, ctx, propertyIndex) {
+      const currentPlayer = G.players[G.currentPlayer];
+      const property = G.board[propertyIndex];
+
+      // Check if the property is owned by the current player
+      if (property.owner !== G.currentPlayer) {
+        throw new Error('You do not own this property.');
+      }
+
+      // Implement logic for managing the property, like building houses/hotels, selling houses, etc.
+    },
+
+    calculateRent(G, ctx, propertyIndex) {
       const property = G.board[propertyIndex];
       const owner = property.owner;
 
@@ -172,32 +172,32 @@ const MortgageBacked = {
       }
 
       // Transfer the rent from the current player to the property owner
-      G.players[ctx.currentPlayer].money -= rent;
+      G.players[G.currentPlayer].money -= rent;
       G.players[owner].money += rent;
-    }
+    },
 
     // Chance Card
-    function drawChanceCard(G, ctx) {
+    drawChanceCard(G, ctx) {
       // Define an array of chance cards with their effects
       const chanceCards = [
         {
           text: 'Advance to Go',
           effect: (G, ctx) => {
-            G.players[ctx.currentPlayer].position = 0;
-            G.players[ctx.currentPlayer].money += 200;
+            G.players[G.currentPlayer].position = 0;
+            G.players[G.currentPlayer].money += 200;
           },
         },
         {
           text: 'Go to Jail',
           effect: (G, ctx) => {
-            G.players[ctx.currentPlayer].position = 10;
-            G.players[ctx.currentPlayer].jailed = true;
+            G.players[G.currentPlayer].position = 10;
+            G.players[G.currentPlayer].jailed = true;
           },
         },
         {
           text: 'Bank pays you dividend of $50',
           effect: (G, ctx) => {
-            G.players[ctx.currentPlayer].money += 50;
+            G.players[G.currentPlayer].money += 50;
           },
         },
         // Add more chance cards here
@@ -211,16 +211,16 @@ const MortgageBacked = {
 
       // Return the text of the chance card for display to the user
       return card.text;
-    }
+    },
 
     // Community Chest Card
-    function drawCommunityChestCard(G, ctx) {
+    drawCommunityChestCard(G, ctx) {
       // Define an array of community chest cards with their effects
       const communityChestCards = [
         {
           text: 'Collect $50 from every player',
           effect: (G, ctx) => {
-            const currentPlayer = ctx.currentPlayer;
+            const currentPlayer = G.currentPlayer;
             const players = Object.keys(G.players);
             players.forEach((player) => {
               if (player !== currentPlayer) {
@@ -233,14 +233,14 @@ const MortgageBacked = {
         {
           text: 'Go directly to Jail',
           effect: (G, ctx) => {
-            G.players[ctx.currentPlayer].position = 10;
-            G.players[ctx.currentPlayer].jailed = true;
+            G.players[G.currentPlayer].position = 10;
+            G.players[G.currentPlayer].jailed = true;
           },
         },
         {
           text: 'Get out of Jail free',
           effect: (G, ctx) => {
-            G.players[ctx.currentPlayer].jailCards += 1;
+            G.players[G.currentPlayer].jailCards += 1;
           },
         },
         // Add more community chest cards here
@@ -254,28 +254,32 @@ const MortgageBacked = {
 
       // Return the text of the community chest card for display to the user
       return card.text;
+    },
+  },
+
+  // Implement game end conditions here
+  endIf(G, ctx) {
+    // Check if any player has gone bankrupt
+    const bankruptPlayers = Object.values(G.players).filter((p) => p.money < 0);
+    if (bankruptPlayers.length > 0) {
+      // If any player has gone bankrupt, end the game and declare the remaining player(s) as the winner(s)
+      const winner = Object.values(G.players).filter((p) => p.money >= 0);
+      ctx.events.endGame({ winner });
     }
 
-    // Win Conditions
-    function endIf(G, ctx) {
-      // Check if any player has gone bankrupt
-      const bankruptPlayers = Object.values(G.players).filter((p) => p.money < 0);
-      if (bankruptPlayers.length > 0) {
-        // If any player has gone bankrupt, end the game and declare the remaining player(s) as the winner(s)
-        const winner = Object.values(G.players).filter((p) => p.money >= 0);
-        ctx.events.endGame({ winner });
-      }
-
-      // Check if any player has reached a monetary threshold
-      const threshold = 1000;
-      const wealthyPlayers = Object.values(G.players).filter((p) => p.money >= threshold);
-      if (wealthyPlayers.length > 0) {
-        // If any player has reached the monetary threshold, end the game and declare the wealthiest player(s) as the winner(s)
-        const winner = wealthyPlayers;
-        ctx.events.endGame({ winner });
-      }
+    // Check if any player has reached a monetary threshold
+    const threshold = 1000;
+    const wealthyPlayers = Object.values(G.players).filter((p) => p.money >= threshold);
+    if (wealthyPlayers.length > 0) {
+      // If any player has reached the monetary threshold, end the game and declare the wealthiest player(s) as the winner(s)
+      const winner = wealthyPlayers;
+      ctx.events.endGame({ winner });
     }
-    };
+  },
+};
 
-  
-  export default MortgageBacked;
+function myFunction() {
+  // code goes here
+}
+
+export default MortgageBacked;
