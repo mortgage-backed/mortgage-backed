@@ -1,44 +1,6 @@
 import React from 'react';
-
-function Property({ name, price, rent }) {
-  return (
-    <div className="property">
-      <div className="name">{name}</div>
-      <div className="price-rent">
-        <div className="price">${price}</div>
-        <div className="rent">${rent}</div>
-      </div>
-    </div>
-  );
-}
-
-function Space({ type, name, children }) {
-  let spaceClass = 'space';
-  if (type === 'property') {
-    spaceClass += ' property';
-  } else if (type === 'go') {
-    spaceClass += ' go';
-  } else if (type === 'tax') {
-    spaceClass += ' tax';
-  } else if (type === 'community-chest') {
-    spaceClass += ' community-chest';
-  } else if (type === 'chance') {
-    spaceClass += ' chance';
-  } else if (type === 'jail') {
-    spaceClass += ' jail';
-  } else if (type === 'free-parking') {
-    spaceClass += ' free-parking';
-  } else if (type === 'go-to-jail') {
-    spaceClass += ' go-to-jail';
-  }
-
-  return (
-    <div className={spaceClass}>
-      <div className="name">{name}</div>
-      {children}
-    </div>
-  );
-}
+import GameBoard from './GameBoard';
+import GameControls from './GameControls';
 
 export function Board({ G, ctx, moves }) {
   console.log('G:', G);
@@ -84,15 +46,14 @@ export function Board({ G, ctx, moves }) {
 
   return (
     <div className="monopoly-board">
-      <div className="row top-row">{spaces.slice(0, 10)}</div>
-      <div className="row right-row">{spaces.slice(10, 20)}</div>
-      <div className="row bottom-row">{spaces.slice(20, 30).reverse()}</div>
-      <div className="row left-row">{spaces.slice(30, 40).reverse()}</div>
+      <GameBoard spaces={spaces} />
       <div className="players">{players}</div>
       {gameInfo}
-      <button onClick={() => moves.rollDice()}>Roll Dice</button>
-      <button onClick={() => moves.buyProperty()}>Buy Property</button>
-      <button onClick={() => moves.endTurn()}>End Turn</button>
+      <GameControls
+        onRollDice={() => moves.rollDice()}
+        onBuyProperty={() => moves.buyProperty()}
+        onEndTurn={() => moves.endTurn()}
+      />
     </div>
   );
 }
