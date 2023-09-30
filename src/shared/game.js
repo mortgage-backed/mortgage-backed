@@ -126,135 +126,195 @@ const MortgageBacked = {
       ctx.events.endTurn();
     },
 
-    // Implement game logic functions here
-    // Property Management
-    manageProperty(G, ctx, propertyIndex) {
-      const currentPlayer = G.players[G.currentPlayer];
-      const property = G.board[propertyIndex];
+    // Add other game moves here
+  },
 
-      // Check if the property is owned by the current player
-      if (property.owner !== G.currentPlayer) {
-        throw new Error('You do not own this property.');
-      }
+  // Implement game logic functions here
+  // Property Management
+  manageProperty(G, ctx, propertyIndex, action, amount) {
+    const currentPlayer = G.players[ctx.currentPlayer];
+    const property = G.board[propertyIndex];
 
-      // Implement logic for managing the property, like building houses/hotels, selling houses, etc.
-    },
+    // Check if the property is owned by the current player
+    if (property.owner !== ctx.currentPlayer) {
+      throw new Error('You do not own this property.');
+    }
 
-    calculateRent(G, ctx, propertyIndex) {
-      const property = G.board[propertyIndex];
-      const owner = property.owner;
+    // Implement logic for managing the property
+    switch (action) {
+      case 'build-house':
+        // Check if the player has enough money to build a house
+        if (currentPlayer.money < property.houseCost) {
+          throw new Error('You do not have enough money to build a house.');
+        }
 
-      // Calculate the base rent for the property based on its type
-      let rent = 0;
-      if (property.type === 'property') {
-        rent = property.rent[property.houses];
-      } else if (property.type === 'railroad') {
-        const numOwned = Object.values(G.board).filter((p) => p.owner === owner && p.type === 'railroad').length;
-        rent = property.rent[numOwned - 1];
-      } else if (property.type === 'utility') {
-        const numOwned = Object.values(G.board).filter((p) => p.owner === owner && p.type === 'utility').length;
-        rent = property.rent[numOwned - 1] * ctx.dice[0] + ctx.dice[1];
-      }
+        // Check if the property has the maximum number of houses already
+        if (property.houses === 5) {
+          throw new Error('This property already has the maximum number of houses.');
+        }
 
-      // Apply any rent multipliers based on the number of houses/hotels on the property
-      if (property.houses === 1) {
-        rent *= 5;
-      } else if (property.houses === 2) {
-        rent *= 15;
-      } else if (property.houses === 3) {
-        rent *= 45;
-      } else if (property.houses === 4) {
-        rent *= 80;
-      } else if (property.houses === 5) {
-        rent *= 125;
-      } else if (property.houses === 6) {
-        rent *= 175;
-      }
+        // Build a house on the property and deduct the cost from the player's money
+        property.houses += 1;
+        currentPlayer.money -= property.houseCost;
+        break;
 
-      // Transfer the rent from the current player to the property owner
-      G.players[G.currentPlayer].money -= rent;
-      G.players[owner].money += rent;
-    },
+      case 'sell-house':
+        // Check if the property has any houses to sell
+        if (property.houses === 0) {
+          throw new Error('This property does not have any houses to sell.');
+        }
 
-    // Chance Card
-    drawChanceCard(G, ctx) {
-      // Define an array of chance cards with their effects
-      const chanceCards = [
-        {
-          text: 'Advance to Go',
-          effect: (G, ctx) => {
-            G.players[G.currentPlayer].position = 0;
-            G.players[G.currentPlayer].money += 200;
-          },
+        // Sell a house on the property and add the sale price to the player's money
+        property.houses -= 1;
+        currentPlayer.money += property.houseCost / 2;
+        break;
+
+      case 'mortgage':
+        // Check if the property is already mortgaged
+        if (property.mortgaged) {
+          throw new Error('This property is already mortgaged.');
+        }
+
+        // Mortgage the property and add the mortgage value to the player's money
+        property.mortgaged = true;
+        currentPlayer.money += property.mortgageValue;
+        break;
+
+      case 'unmortgage':
+        // Check if the property is already unmortgaged
+        if (!property.mortgaged) {
+          throw new Error('This property is not mortgaged.');
+        }
+
+        // Check if the player has enough money to unmortgage the property
+        if (currentPlayer.money < property.mortgageValue * 1.1) {
+          throw new Error('You do not have enough money to unmortgage this property.');
+        }
+
+        // Unmortgage the property and deduct the unmortgage value from the player's money
+        property.mortgaged = false;
+        currentPlayer.money -= property.mortgageValue * 1.1;
+        break;
+
+      default:
+        throw new Error('Invalid action.');
+    }
+  },
+
+  calculateRent(G, ctx, propertyIndex) {
+    const property = G.board[propertyIndex];
+    const owner = property.owner;
+
+    // Calculate the base rent for the property based on its type
+    let rent = 0;
+    if (property.type === 'property') {
+      rent = property.rent[property.houses];
+    } else if (property.type === 'railroad') {
+      const numOwned = Object.values(G.board).filter((p) => p.owner === owner && p.type === 'railroad').length;
+      rent = property.rent[numOwned - 1];
+    } else if (property.type === 'utility') {
+      const numOwned = Object.values(G.board).filter((p) => p.owner === owner && p.type === 'utility').length;
+      rent = property.rent[numOwned - 1] * ctx.dice[0] + ctx.dice[1];
+    }
+
+    // Apply any rent multipliers based on the number of houses/hotels on the property
+    if (property.houses === 1) {
+      rent *= 5;
+    } else if (property.houses === 2) {
+      rent *= 15;
+    } else if (property.houses === 3) {
+      rent *= 45;
+    } else if (property.houses === 4) {
+      rent *= 80;
+    } else if (property.houses === 5) {
+      rent *= 125;
+    } else if (property.houses === 6) {
+      rent *= 175;
+    }
+
+    // Transfer the rent from the current player to the property owner
+    G.players[G.currentPlayer].money -= rent;
+    G.players[owner].money += rent;
+  },
+
+  // Chance Card
+  drawChanceCard(G, ctx) {
+    // Define an array of chance cards with their effects
+    const chanceCards = [
+      {
+        text: 'Advance to Go',
+        effect: (G, ctx) => {
+          G.players[G.currentPlayer].position = 0;
+          G.players[G.currentPlayer].money += 200;
         },
-        {
-          text: 'Go to Jail',
-          effect: (G, ctx) => {
-            G.players[G.currentPlayer].position = 10;
-            G.players[G.currentPlayer].jailed = true;
-          },
+      },
+      {
+        text: 'Go to Jail',
+        effect: (G, ctx) => {
+          G.players[G.currentPlayer].position = 10;
+          G.players[G.currentPlayer].jailed = true;
         },
-        {
-          text: 'Bank pays you dividend of $50',
-          effect: (G, ctx) => {
-            G.players[G.currentPlayer].money += 50;
-          },
+      },
+      {
+        text: 'Bank pays you dividend of $50',
+        effect: (G, ctx) => {
+          G.players[G.currentPlayer].money += 50;
         },
-        // Add more chance cards here
-      ];
+      },
+      // Add more chance cards here
+    ];
 
-      // Draw a random chance card
-      const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
+    // Draw a random chance card
+    const card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
 
-      // Apply the effect of the chance card to the game state
-      card.effect(G, ctx);
+    // Apply the effect of the chance card to the game state
+    card.effect(G, ctx);
 
-      // Return the text of the chance card for display to the user
-      return card.text;
-    },
+    // Return the text of the chance card for display to the user
+    return card.text;
+  },
 
-    // Community Chest Card
-    drawCommunityChestCard(G, ctx) {
-      // Define an array of community chest cards with their effects
-      const communityChestCards = [
-        {
-          text: 'Collect $50 from every player',
-          effect: (G, ctx) => {
-            const currentPlayer = G.currentPlayer;
-            const players = Object.keys(G.players);
-            players.forEach((player) => {
-              if (player !== currentPlayer) {
-                G.players[currentPlayer].money += 50;
-                G.players[player].money -= 50;
-              }
-            });
-          },
+  // Community Chest Card
+  drawCommunityChestCard(G, ctx) {
+    // Define an array of community chest cards with their effects
+    const communityChestCards = [
+      {
+        text: 'Collect $50 from every player',
+        effect: (G, ctx) => {
+          const currentPlayer = G.currentPlayer;
+          const players = Object.keys(G.players);
+          players.forEach((player) => {
+            if (player !== currentPlayer) {
+              G.players[currentPlayer].money += 50;
+              G.players[player].money -= 50;
+            }
+          });
         },
-        {
-          text: 'Go directly to Jail',
-          effect: (G, ctx) => {
-            G.players[G.currentPlayer].position = 10;
-            G.players[G.currentPlayer].jailed = true;
-          },
+      },
+      {
+        text: 'Go directly to Jail',
+        effect: (G, ctx) => {
+          G.players[G.currentPlayer].position = 10;
+          G.players[G.currentPlayer].jailed = true;
         },
-        {
-          text: 'Get out of Jail free',
-          effect: (G, ctx) => {
-            G.players[G.currentPlayer].jailCards += 1;
-          },
+      },
+      {
+        text: 'Get out of Jail free',
+        effect: (G, ctx) => {
+          G.players[G.currentPlayer].jailCards += 1;
         },
-        // Add more community chest cards here
-      ];
+      },
+      // Add more community chest cards here
+    ];
 
-      // Draw a random community chest card
-      const card = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
+    // Draw a random community chest card
+    const card = communityChestCards[Math.floor(Math.random() * communityChestCards.length)];
 
-      // Apply the effect of the community chest card to the game state
-      card.effect(G, ctx);
+    // Apply the effect of the community chest card to the game state
+    card.effect(G, ctx);
 
-      // Return the text of the community chest card for display to the user
-      return card.text;
-    },
+    // Return the text of the community chest card for display to the user
+    return card.text;
   },
 
   // Implement game end conditions here
