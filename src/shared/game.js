@@ -338,8 +338,4 @@ const MortgageBacked = {
   },
 };
 
-function myFunction() {
-  // code goes here
-}
-
 export default MortgageBacked;
