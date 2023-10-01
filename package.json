@@ -3,9 +3,9 @@
   "name": "mortgage-backed",
   "version": "1.0.0",
   "description": "Turn based game letting you securitize real estate, issue stock, take on debt, and more",
-  "main": "index.js",
+  "main": "public/index.js",
   "scripts": {
-    "start": "http-server -c-1 -o app.js",
+    "start": "http-server -c-1 -o index.html",
     "build": "webpack --config webpack.config.cjs",
     "test": "jest"
   },
