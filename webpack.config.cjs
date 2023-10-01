@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',  
-  entry: './src/client/App.js',
+  entry: './public/index.js',
   output: {
     path: path.resolve(__dirname, 'public', 'dist'),
     filename: 'bundle.js',
@@ -19,6 +19,20 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        use: ['file-loader'],
+      },
     ],
+  },
+  resolve: {
+    alias: {
+      'boardgame.io/react$': path.resolve(__dirname, 'node_modules/boardgame.io/dist/cjs/react.js'),
+      'boardgame.io/multiplayer$': path.resolve(__dirname, 'node_modules/boardgame.io/dist/cjs/multiplayer.js')
+    }
   },
 };

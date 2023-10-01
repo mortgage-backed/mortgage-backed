@@ -1,6 +1,25 @@
 import React from 'react';
-import GameBoard from './GameBoard';
-import GameControls from './GameControls';
+import GameBoard from './gameboard.js';
+import GameControls from './gamecontrols.js';
+
+function Space({ type, name, children }) {
+  return (
+    <div className={`space ${type}`}>
+      <div className="space-name">{name}</div>
+      {children}
+    </div>
+  );
+}
+
+function Property({ name, price, rent }) {
+  return (
+    <div className="property">
+      <div className="property-name">{name}</div>
+      <div className="property-price">Price: ${price}</div>
+      <div className="property-rent">Rent: ${rent}</div>
+    </div>
+  );
+}
 
 export function Board({ G, ctx, moves }) {
   console.log('G:', G);

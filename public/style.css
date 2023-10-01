@@ -6,7 +6,7 @@
     margin: 0 auto;
     border: 2px solid black;
     border-radius: 10px;
-    background-image: url('../assets/images/board.png');
+    background-image: url('../../src/assets/images/board.png');
     background-size: cover;
 }
 

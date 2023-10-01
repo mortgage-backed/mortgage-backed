@@ -1,9 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './App';
-import { Board } from './board';
+import App from '../src/client/App.js';
 import './style.css';
 
-// ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
 const rootElement = document.getElementById('root');
-ReactDOM.render(<Board />, rootElement);
+console.log('Index.js is loaded!');
+
+if (rootElement) {
+    console.log('Root element found!');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+} else {
+    console.error('Root element not found!');
+}
