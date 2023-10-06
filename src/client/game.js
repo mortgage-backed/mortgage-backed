@@ -48,6 +48,8 @@ const MortgageBacked = {
     players: {
       0: { position: 0, money: 1500, properties: [] },
       1: { position: 0, money: 1500, properties: [] },
+      2: { position: 0, money: 1500, properties: [] },
+      3: { position: 0, money: 1500, properties: [] },
       // Add more players as needed
     },
     currentPlayer: 0, // Initialize with player 0
@@ -64,8 +66,8 @@ const MortgageBacked = {
       }
 
       // Simulate rolling two dice (each with values from 1 to 6)
-      const die1 = Math.floor(Math.random() * 6) + 1;
-      const die2 = Math.floor(Math.random() * 6) + 1;
+      const die1 = ctx.random.D6();
+      const die2 = ctx.random.D6();
       const totalRoll = die1 + die2;
 
       // Update the player's position
